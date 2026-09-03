@@ -27,8 +27,8 @@ m_num <- matrix(c(1:9), nrow=3, ncol=3)
 m_num
 # 5: Create a base R data frame (`data.frame()` function) using `v_x` and `v_abc100`.  
 # Name the columns `"x"` for `v_x` and `"group"` for `v_abc100`, and assign it to `df_sample`.
-
-
+df_sample <- data.frame(x = v_x, group=v_abc100)
+df_sample
 # tidyverse ---------------------------------------------------------------
 
 # 6: Load the `tidyverse` package.
@@ -76,9 +76,11 @@ n_make <- df_mtcars %>%
 # 14: Convert the `cyl` column from numeric to factor using `factor()`.  
 # Add it to `df_mtcars` as a new column named `f_cyl` using `mutate()` function.
 # Use ?factor() for the usage of factor() function.
-
+df_mtcars <- mutate(df_mtcars, f_cyl= as.factor(df_mtcars$cyl))
 # 15: Draw a box plot showing car weight (`wt`) for each number of cylinders (`f_cyl`).
-
+df_mtcars %>% 
+  ggplot(aes(x=f_cyl, y=wt)) +
+  geom_boxplot()
 # 16: Calculate the average car weight (`wt`) separately for each number of cylinders (`cyl`).
 # Hint - `group_by()` and `summarize()` functions.
 
@@ -86,7 +88,9 @@ n_make <- df_mtcars %>%
 # Hint - `filter()` and `arrange()` functions.
 
 # 18: Create a histogram showing the distribution of 1/4 mile time (`qsec`).
-
+df_mtcars %>% 
+  ggplot(aes(x=gsec)) +
+  geom_histogram()
 # 19: The following script reads two tibbles:
 # one containing fish length data and the other containing fish weight data.
 # Combine the two data frames by matching the `species` and `individual` columns
