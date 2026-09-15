@@ -46,6 +46,9 @@ sigma2 <- sum((df_h0$height - mu)^2) / nrow(df_h0)
 #random sampling
 df_i <- df_h0 %>%
   sample_n( size =10)
+
+mu_i <- var_i <- NULL #corrected must be before for()
+# for loop
 for (i in 1:1000) {
   df_i <- df_h0 %>%
     sample_n( size =10)
@@ -55,8 +58,8 @@ for (i in 1:1000) {
   #variance subset
   var_i <- sum((df_i$height - mu_i)^2) / nrow(df_i)
 }
-# for loop 
-mu_i <- var_i <- NULL
+
+
 
 df_i <- df_h0 %>%
   sample_n( size =10)
