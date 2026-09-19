@@ -53,22 +53,14 @@ for (i in 1:1000) {
   df_i <- df_h0 %>%
     sample_n( size =10)
   #mean subset
-  mu_i <- mean(df_i$height)
+  mu_i[i] <- mean(df_i$height)
   
   #variance subset
-  var_i <- sum((df_i$height - mu_i)^2) / nrow(df_i)
+  var_i[i] <- sum((df_i$height - mu_i[i])^2) / nrow(df_i)
 }
 
 
 
-df_i <- df_h0 %>%
-  sample_n( size =10)
-
-#mean subset
-mu_i <- mean(df_i$height)
-
-#variance subset
-var_i <- sum((df_i$height - mu_i)^2) / nrow(df_i)
 
 #visualization
 df_sample <- tibble(mu_hat = mu_i, var_hat = var_i)
@@ -98,7 +90,7 @@ g_mu/g_var
 mu_i <- var_i <- var_ub_i <- NULL
 
 # repeat the work in {} from i = 1 to i = 100
-for (i in 1:100) {
+for (i in 1:1000) {
   
   df_i <- df_h0 %>% 
     sample_n(size = 10) # random samples of 10 individuals
@@ -142,15 +134,8 @@ g_var_ub <- df_sample %>%
 
 g_mu / g_var / g_var_ub
 
-df_sample <- df_sample %>%
-  mutate(var_ub_hat = var_ub_i)
-
-g_var_ub <- df_sample %>%
-  ggplot(aes(x = var_ub_hat))+
-  geom_histogram()+
-  geom_vline(xintercept = sigma2)
 
 # combined figure
 g_var <- g_var +scale_x_continuous(limits = c(0, 80))
-
+g_var_ub <- g_var_ub +scale_x_continuous(limits = c(0, 80))
 g_mu / g_var / g_var_ub
