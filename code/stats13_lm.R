@@ -1,0 +1,124 @@
+#linear model
+
+rm(list = ls())
+pacman::p_load(tidyverse)
+
+# categorical
+
+df_fl <- read_csv("data_src/data_fish_length.csv")
+
+m_fl <- lm(length ~ lake, data = df_fl)
+
+summary(m_fl)
+
+#calc mean fish length for lake a and b
+#take difference
+
+v_mu <- df_fl%>%
+  group_by(lake)%>%
+  summarize(mu = mean(length))%>%
+  pull(mu)
+
+v_mu[2]- v_mu
+
+##t-test for comparison bw a and b
+
+t.test(length ~ lake, df_fl, var.equal = TRUE)
+
+df_anova <- read_csv("data_src/data_fish_length_anova.csv")
+
+m_anova <- lm(length ~ lake, data = df_anova)
+summary(m_anova)
+
+#calc mean for each group
+
+#differences between a, b, c
+
+v_mu_anova <- df_anova%>%
+  group_by(lake)%>%
+  summarize(mu = mean(length))%>%
+  pull(mu)
+
+#b vs a
+v_mu_anova[2]- v_mu_anova[1]
+
+#a vs c
+v_mu_anova[3]- v_mu_anova[1]
+
+#try anova for comparison
+fit_aov <- aov(length ~ lake, data = df_anova)
+
+summary(fit_aov)
+
+##how to modify the order of groups
+
+df_anova <- df_anova%>%
+  mutate(lake_factor = factor(lake, levels = c("c", "a", "b")))
+
+unique(df_anova$lake)
+unique(df_anova$lake_factor)
+
+
+lm(length ~ lake_factor, data= df_anova)%>%
+  summary()
+
+
+
+#mix of continuous and categorical predictors
+
+
+iris <- as_tibble(iris)
+distinct(iris, Species)
+
+m_iris <- lm(Petal.Length ~ Petal.Width + Species, data = iris)
+summary(m_iris)
+
+#visualzie
+#generate prediction
+n_rep <- 100
+df_pred <- iris%>%
+  group_by(Species)%>%
+  reframe(
+    Petal.Width = seq(min(Petal.Width),
+                      max(Petal.Width),
+                      length = n_rep)
+  )
+y_pred <- predict(m_iris, 
+                  newdata = df_pred)
+
+df_pred <- df_pred%>%
+  mutate(y_pred = y_pred)
+
+df_pred
+
+##figure
+iris%>%
+  ggplot(aes( x = Petal.Width, y = Petal.Length,
+              color = Species))+
+  geom_point(alpha =0.5)+
+  geom_line(data = df_pred, aes(y = y_pred))
+
+
+
+#interaction
+
+#manual interaction
+lm(Petal.Length ~ Petal.Width + Species + Petal.Width:Species, data = iris)
+
+##shortcut interaction
+m_iris_int <- lm(Petal.Length ~ Petal.Width * Species, data = iris)
+summary(m_iris_int)
+y_pred_int <- predict(m_iris_int, newdata = df_pred)
+
+df_pred <- df_pred%>%
+  mutate(y_pred_int = y_pred_int)
+
+iris%>%
+  ggplot(aes(x = Petal.Width, y = Petal.Length, color = Species))+
+  geom_point(alpha = 0.5)+
+  geom_line(data = df_pred,
+            aes(y = y_pred_int))
+
+
+
+
